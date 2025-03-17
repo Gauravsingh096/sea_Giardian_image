@@ -1,0 +1,43 @@
+import torch
+import torch.nn as nn
+import torch.optim as optim
+import torchvision.models as models
+from torch.utils.data import DataLoader
+from utils import load_data
+from torchvision.models import ResNet50_Weights  # Import the weights enum
+
+def train_model(epochs=5):
+    train_loader, _ = load_data()
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")  # Add device definition
+
+    # Load Pretrained Model using weights
+    weights = ResNet50_Weights.IMAGENET1K_V1  # Or ResNet50_Weights.DEFAULT for the latest weights
+    model = models.resnet50(weights=weights)
+    num_ftrs = model.fc.in_features
+    model.fc = nn.Linear(num_ftrs, 4)  # Adjust for 4 classes
+    model = model.to(device)
+
+    # Define Loss & Optimizer
+    criterion = nn.CrossEntropyLoss()
+    optimizer = optim.Adam(model.parameters(), lr=0.001)
+
+    # Training Loop
+    model.train()
+    for epoch in range(epochs):
+        running_loss = 0.0
+        for images, labels in train_loader:
+            images, labels = images.to(device), labels.to(device)
+
+            optimizer.zero_grad()
+            outputs = model(images)
+            loss = criterion(outputs, labels)
+            loss.backward()
+            optimizer.step()
+
+            running_loss += loss.item()
+
+        print(f"Epoch {epoch+1}/{epochs}, Loss: {running_loss/len(train_loader):.4f}")
+
+    # Save model
+    torch.save(model.state_dict(), "models/model.pth")
+    print("Model saved to models/model.pth")
