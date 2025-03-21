@@ -4,14 +4,15 @@ import torch.optim as optim
 import torchvision.models as models
 from torch.utils.data import DataLoader
 from utils import load_data
-from torchvision.models import ResNet50_Weights  # Import the weights enum
+from torchvision.models import ResNet50_Weights
+from torch.optim.lr_scheduler import CosineAnnealingLR
 
-def train_model(epochs=5):
+def train_model(epochs=15):
     train_loader, _ = load_data()
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")  # Add device definition
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     # Load Pretrained Model using weights
-    weights = ResNet50_Weights.IMAGENET1K_V1  # Or ResNet50_Weights.DEFAULT for the latest weights
+    weights = ResNet50_Weights.IMAGENET1K_V1
     model = models.resnet50(weights=weights)
     num_ftrs = model.fc.in_features
     model.fc = nn.Linear(num_ftrs, 4)  # Adjust for 4 classes
@@ -19,7 +20,8 @@ def train_model(epochs=5):
 
     # Define Loss & Optimizer
     criterion = nn.CrossEntropyLoss()
-    optimizer = optim.Adam(model.parameters(), lr=0.001)
+    optimizer = optim.AdamW(model.parameters(), lr=0.001, weight_decay=0.01)
+    scheduler = CosineAnnealingLR(optimizer, T_max=epochs)
 
     # Training Loop
     model.train()
@@ -32,7 +34,8 @@ def train_model(epochs=5):
             outputs = model(images)
             loss = criterion(outputs, labels)
             loss.backward()
-            optimizer.step()
+            optimizer.step()  # Step the optimizer first
+            scheduler.step()  # Then step the scheduler
 
             running_loss += loss.item()
 

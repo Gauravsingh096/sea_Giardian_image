@@ -1,7 +1,13 @@
 torch
 torchvision
 torchaudio
-matplotlib
+albumentations
 numpy
+matplotlib
 opencv-python
+Pillow
+scikit-learn  
+torch
+torchvision
+flask
 Pillow
