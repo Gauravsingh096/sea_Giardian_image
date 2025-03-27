@@ -68,9 +68,23 @@ import torch.nn as nn
 import torchvision.models as models
 import os
 from flask_cors import CORS
+import os
+import torchvision.models as models
+model = models.resnet18()
 
 app = Flask(__name__)
 CORS(app)
+
+
+model_path = "models/model.pth"
+
+if os.path.exists(model_path):
+    model.load_state_dict(torch.load(model_path, map_location=torch.device("cpu")))
+    print("Model loaded successfully.")
+else:
+    print(f"Error: Model file '{model_path}' not found!")
+    
+model.eval()
 
 # Class labels
 class_names = ["oil_spills", "plastic_waste", "illegal_dumping", "animals"]
