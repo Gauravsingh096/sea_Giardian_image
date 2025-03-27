@@ -11,7 +11,6 @@ def train_model(epochs=15):
     train_loader, _ = load_data()
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    # Load Pretrained Model using weights
     weights = ResNet50_Weights.IMAGENET1K_V1
     model = models.resnet50(weights=weights)
     num_ftrs = model.fc.in_features
@@ -34,12 +33,13 @@ def train_model(epochs=15):
             outputs = model(images)
             loss = criterion(outputs, labels)
             loss.backward()
-            optimizer.step()  # Step the optimizer first
-            scheduler.step()  # Then step the scheduler
+            optimizer.step()  
+            scheduler.step()  
 
             running_loss += loss.item()
 
         print(f"Epoch {epoch+1}/{epochs}, Loss: {running_loss/len(train_loader):.4f}")
+        print("Gauravsingh096")
 
     # Save model
     torch.save(model.state_dict(), "models/model.pth")
