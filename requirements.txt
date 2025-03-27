@@ -11,4 +11,5 @@ torch
 torchvision
 Pillow
 Flask
+flask-cors
 # updatd ine
