@@ -10,4 +10,4 @@ uploads/
 
 dataset/
 # Ignore model files and virtual environments
-models/*.pth
+# models/*.pth
