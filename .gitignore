@@ -4,6 +4,10 @@ ENV/
 __pycache__/
 *.pyc
 
+
 # Ignore large dataset or uploads
 uploads/
+
 dataset/
+# Ignore model files and virtual environments
+models/*.pth
