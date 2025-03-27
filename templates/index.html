@@ -25,10 +25,12 @@
                 method: 'POST',
                 body: formData
             });
-
+            
             const data = await response.json();
             document.getElementById('result').innerText = "Predicted Class: " + data.prediction;
         });
     </script>
 </body>
 </html>
+
+{% comment %} it is updated {% endcomment %}

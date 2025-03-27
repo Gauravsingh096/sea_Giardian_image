@@ -44,3 +44,5 @@ def train_model(epochs=15):
     # Save model
     torch.save(model.state_dict(), "models/model.pth")
     print("Model saved to models/model.pth")
+    
+    # updated one

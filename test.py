@@ -36,3 +36,4 @@ def evaluate_model():
 
     print(f"Test Accuracy: {100 * correct / total:.2f}%")
     print(classification_report(all_labels, all_preds, target_names=class_names))
+    # updated one
