@@ -68,33 +68,33 @@ import torch.nn as nn
 import torchvision.models as models
 import os
 from flask_cors import CORS
-import os
-import torchvision.models as models
-model = models.resnet18()
 
 app = Flask(__name__)
 CORS(app)
 
+# Model file path
+MODEL_PATH = "models/model.pth"
 
-model_path = "models/model.pth"
-
-if os.path.exists(model_path):
-    model.load_state_dict(torch.load(model_path, map_location=torch.device("cpu")))
-    print("Model loaded successfully.")
-else:
-    print(f"Error: Model file '{model_path}' not found!")
-    
-model.eval()
-
-# Class labels
+# Define class labels
 class_names = ["oil_spills", "plastic_waste", "illegal_dumping", "animals"]
 
-# Load the trained model
+# Load the model
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = models.resnet50(pretrained=False)  # Do not load ImageNet weights
 num_ftrs = model.fc.in_features
 model.fc = nn.Linear(num_ftrs, len(class_names))
-model.load_state_dict(torch.load("models/model.pth", map_location=device))
+
+if os.path.exists(MODEL_PATH):
+    try:
+        model.load_state_dict(torch.load(MODEL_PATH, map_location=device))
+        print("✅ Model loaded successfully.")
+    except Exception as e:
+        print(f"❌ Error loading model: {e}")
+        exit(1)  # Stop execution if model loading fails
+else:
+    print(f"❌ Error: Model file '{MODEL_PATH}' not found!")
+    exit(1)
+
 model = model.to(device)
 model.eval()
 
@@ -102,7 +102,7 @@ model.eval()
 transform = transforms.Compose([
     transforms.Resize((224, 224)),
     transforms.ToTensor(),
-    transforms.Normalize([0.5], [0.5])
+    transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])  # Fix normalization for 3 channels
 ])
 
 @app.route('/')
@@ -111,7 +111,6 @@ def home():
 
 @app.route('/predict', methods=['POST'])
 def predict_route():
-    # Check if a file is provided in the request
     if 'file' not in request.files:
         return jsonify({"error": "No file uploaded"}), 400
 
@@ -120,7 +119,7 @@ def predict_route():
         return jsonify({"error": "No selected file"}), 400
 
     try:
-        # Open the image and convert it to RGB
+        # Open the image and convert to RGB
         image = Image.open(file).convert('RGB')
     except Exception as e:
         return jsonify({"error": f"Error processing image: {str(e)}"}), 400
@@ -138,4 +137,3 @@ def predict_route():
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5000, debug=True)
-# updated one
