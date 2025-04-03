@@ -11,3 +11,4 @@ uploads/
 dataset/
 # Ignore model files and virtual environments
 # models/*.pth
+.env
