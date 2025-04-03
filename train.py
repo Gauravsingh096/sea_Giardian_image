@@ -7,7 +7,7 @@ from utils import load_data
 from torchvision.models import ResNet50_Weights
 from torch.optim.lr_scheduler import CosineAnnealingLR
 
-def train_model(epochs=15):
+def train_model(epochs=10):
     train_loader, _ = load_data()
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
